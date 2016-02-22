@@ -1,13 +1,21 @@
-var refreshIframeWhenNecesary = function() {
-  var feedSourceURL = './feed-source.txt';
-  $.get(feedSourceURL, function(feedURL) {
-    setTimeout(refreshIframeWhenNecesary, 10 * 1000);
-    var iframe = document.getElementById('feed-iframe');
-    if(iframe.src != feedURL.trim()) {
-      console.log("Refreshing from " + iframe.src + " to " + feedURL);
-      iframe.src = feedURL;
-    }
-  });
+var settings = {
+  feedSource: './feed-source.txt',
+  refreshTime: 10,
+  iframeId: 'feed-iframe'
 }
 
-setTimeout(refreshIframeWhenNecesary, 10 * 1000);
+var refreshIframeWhenNecesary = function(settings) {
+  return function() {
+    var feedSourceURL = settings.feedSource;
+    $.get(feedSourceURL, function(feedURL) {
+      setTimeout(refreshIframeWhenNecesary, settings.refreshTime * 1000);
+      var iframe = document.getElementById('feed-iframe');
+      if(iframe.src != feedURL.trim()) {
+        console.log("Refreshing from " + iframe.src + " to " + feedURL);
+        iframe.src = feedURL;
+      }
+    });
+  }
+}(settings);
+
+setTimeout(refreshIframeWhenNecesary, settings.refreshTime * 1000);
